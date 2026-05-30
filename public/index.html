@@ -39,12 +39,21 @@
         .section-title:first-child { margin-top: 0; }
 
         /* 検索バー (UI強化版) */
-        .search-container { margin-bottom: 30px; display: flex; align-items: center; background-color: #242424; border-radius: 50px; padding: 0 16px; max-width: 400px; width: 100%; border: 1px solid transparent; transition: border 0.2s, background-color 0.2s; }
+        .search-container { margin-bottom: 20px; display: flex; align-items: center; background-color: #242424; border-radius: 50px; padding: 0 16px; max-width: 400px; width: 100%; border: 1px solid transparent; transition: border 0.2s, background-color 0.2s; }
         .search-container:hover { background-color: #2a2a2a; }
         .search-container:focus-within { border: 1px solid white; background-color: #2a2a2a; }
         .search-icon { color: var(--text-muted); margin-right: 8px; cursor: pointer; user-select: none; transition: color 0.2s; }
         .search-icon:hover { color: var(--text-main); }
         .search-input { width: 100%; padding: 12px 0; border: none; background: transparent; color: white; font-size: 14px; outline: none; }
+
+        /* 検索履歴UI追加部分 */
+        .search-history-container { margin-bottom: 30px; }
+        .search-history-title { font-size: 14px; color: var(--text-muted); margin-bottom: 10px; font-weight: bold; }
+        .search-history-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .search-chip { background-color: #242424; color: var(--text-main); padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: background-color 0.2s; display: flex; align-items: center; gap: 6px; }
+        .search-chip:hover { background-color: #2a2a2a; }
+        .search-chip .material-icons { font-size: 14px; color: var(--text-muted); }
+        .search-chip .material-icons:hover { color: #ff5c5c; }
 
         /* 楽曲グリッド（カード型強化UI） */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 24px; margin-bottom: 24px; }
@@ -61,13 +70,36 @@
         .play-btn-overlay:hover { background-color: var(--spotify-green-hover); transform: scale(1.06) !important; }
         .play-btn-overlay .material-icons { color: black; font-size: 28px; }
 
+        /* 検索結果専用：縦並びリストUI */
+        .list-container { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+        .list-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background-color: transparent; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .list-item:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .list-item-left { display: flex; align-items: center; gap: 16px; overflow: hidden; flex: 1; }
+        .list-item-index { width: 24px; color: var(--text-muted); font-size: 14px; text-align: right; }
+        .list-item img { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
+        .list-item-details { overflow: hidden; }
+        .list-item-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
+        .list-item-artist { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }
+        .list-item-right { display: flex; align-items: center; gap: 16px; color: var(--text-muted); }
+
+        /* プレイリスト再生ヘッダーボタン */
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; margin-top: 24px; }
+        .section-header .section-title { margin: 0; }
+        .play-all-btn { display: flex; align-items: center; gap: 6px; background-color: var(--spotify-green); color: black; border: none; padding: 8px 16px; border-radius: 50px; font-weight: bold; font-size: 13px; cursor: pointer; transition: background-color 0.2s, transform 0.2s; }
+        .play-all-btn:hover { background-color: var(--spotify-green-hover); transform: scale(1.03); }
+        .play-all-btn:active { transform: scale(0.98); }
+        .play-all-btn .material-icons { font-size: 18px; }
+
         /* 読み込みアニメーション（スケルトンローダー & スピナー） */
         .skeleton-card { pointer-events: none; }
         .skeleton-thumb { width: 100%; aspect-ratio: 1; background: linear-gradient(90deg, #1a1a1a 25%, #282828 50%, #1a1a1a 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 6px; margin-bottom: 16px; }
         .skeleton-text { height: 14px; background: linear-gradient(90deg, #1a1a1a 25%, #282828 50%, #1a1a1a 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 4px; margin-bottom: 8px; }
         .skeleton-text.sub { width: 60%; height: 12px; }
+        
+        /* リストUI用スケルトン */
+        .skeleton-list-item { height: 56px; background: linear-gradient(90deg, #1a1a1a 25%, #282828 50%, #1a1a1a 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 6px; margin-bottom: 8px; }
+        
         @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .spinning { animation: rotation 1.5s linear infinite; }
 
@@ -220,12 +252,22 @@
     <div class="main-view">
         
         <div id="home-view" class="view-section active">
-            <h2 class="section-title">最近聴いた曲</h2>
+            <div class="section-header">
+                <h2 class="section-title">最近聴いた曲</h2>
+                <button class="play-all-btn" onclick="playAllFromSection('recent-grid')">
+                    <span class="material-icons">play_arrow</span>すべて再生
+                </button>
+            </div>
             <div class="grid-container" id="recent-grid">
                 <p style="color: var(--text-muted); font-size: 14px; padding: 16px 0;" id="no-recent-msg">最近聴いた曲がここに表示されます</p>
             </div>
 
-            <h2 class="section-title">あなたへのおすすめ</h2>
+            <div class="section-header">
+                <h2 class="section-title">あなたへのおすすめ</h2>
+                <button class="play-all-btn" onclick="playAllFromSection('recommend-grid')">
+                    <span class="material-icons">play_arrow</span>すべて再生
+                </button>
+            </div>
             <div class="grid-container" id="recommend-grid">
             </div>
         </div>
@@ -235,12 +277,31 @@
                 <span class="material-icons search-icon" onclick="search()">search</span>
                 <input type="text" id="search-input" class="search-input" placeholder="なにを聴きたいですか？" onkeypress="if(event.key === 'Enter') search()">
             </div>
-            <div class="grid-container" id="grid">
+            
+            <div class="search-history-container">
+                <div class="search-history-title">最近の検索履歴</div>
+                <div class="search-history-chips" id="search-history-chips">
+                    <p style="color: var(--text-muted); font-size: 13px;" id="no-history-msg">まだ履歴がありません。音楽を検索してみましょう！</p>
+                </div>
+            </div>
+
+            <div class="section-header" id="search-results-header" style="display: none;">
+                <h2 class="section-title">検索結果</h2>
+                <button class="play-all-btn" onclick="playAllFromSection('grid')">
+                    <span class="material-icons">play_arrow</span>すべて再生
+                </button>
+            </div>
+            <div class="list-container" id="grid">
             </div>
         </div>
 
         <div id="favorite-view" class="view-section">
-            <h2 class="section-title">お気に入りの楽曲</h2>
+            <div class="section-header">
+                <h2 class="section-title">お気に入りの楽曲</h2>
+                <button class="play-all-btn" onclick="playAllFromSection('favorite-grid')">
+                    <span class="material-icons">play_arrow</span>すべて再生
+                </button>
+            </div>
             <div class="grid-container" id="favorite-grid">
                 <p style="color: var(--text-muted); font-size: 14px; padding: 16px 0;" id="no-favorite-msg">お気に入りに登録された曲がありません</p>
             </div>
@@ -388,9 +449,14 @@
         let dragStartY = 0;
         let isDragging = false;
 
+        // プレイリスト機能用グローバルステート
+        let playQueue = [];
+        let currentQueueIndex = -1;
+
         window.addEventListener('DOMContentLoaded', () => {
             loadRecentTracks();
             loadFavoriteTracks();
+            loadSearchHistoryUI();
             generateRecommendations();
         });
 
@@ -423,14 +489,28 @@
             }
         }
 
+        // 検索結果のリストUI用スケルトン生成関数
+        function createListSkeletons(container, count) {
+            container.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const skeleton = document.createElement('div');
+                skeleton.className = 'skeleton-list-item';
+                container.appendChild(skeleton);
+            }
+        }
+
         // i.ytimg.comから最適かつ高画質なサムネイルURLをビルドする関数
         function buildYouTubeThumbnail(videoId) {
             return `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
         }
 
         // 2. 楽曲検索処理
-        async function search() {
-            const query = document.getElementById('search-input').value;
+        async function search(forcedQuery = null) {
+            const inputEl = document.getElementById('search-input');
+            if (forcedQuery !== null) {
+                inputEl.value = forcedQuery;
+            }
+            const query = inputEl.value.trim();
             if (!query) return;
 
             const searchNavBtn = Array.from(document.querySelectorAll('.nav-item')).find(item => item.innerText.includes('検索'));
@@ -439,9 +519,12 @@
             }
 
             saveSearchQuery(query);
+            loadSearchHistoryUI(); // 検索履歴UIの即時更新
 
             const grid = document.getElementById('grid');
-            createSkeletons(grid, 6);
+            const resultsHeader = document.getElementById('search-results-header');
+            resultsHeader.style.display = 'block';
+            createListSkeletons(grid, 5);
 
             try {
                 const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
@@ -453,20 +536,36 @@
                     return;
                 }
 
-                tracks.forEach(track => {
+                // 検索結果データを管理用属性付きの「List UI」エレメントとしてレンダリング
+                tracks.forEach((track, index) => {
                     const secureThumb = buildYouTubeThumbnail(track.id);
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.onclick = () => play(track.id, track.title, track.author, secureThumb);
-                    card.innerHTML = `
-                        <img src="${secureThumb}" alt="thumbnail" onerror="this.src='${track.thumbnail}'">
-                        <div class="play-btn-overlay">
-                            <span class="material-icons">play_arrow</span>
+                    const listItem = document.createElement('div');
+                    listItem.className = 'list-item';
+                    // プレイリスト抽出用にデータ属性を設定
+                    listItem.setAttribute('data-id', track.id);
+                    listItem.setAttribute('data-title', track.title);
+                    listItem.setAttribute('data-author', track.author);
+                    listItem.setAttribute('data-thumbnail', secureThumb);
+                    
+                    listItem.onclick = () => {
+                        // 単体クリック時はキューをこの検索結果に設定し、そのインデックスから開始
+                        extractAndSetQueue('grid', index);
+                    };
+
+                    listItem.innerHTML = `
+                        <div class="list-item-left">
+                            <div class="list-item-index">${index + 1}</div>
+                            <img src="${secureThumb}" alt="thumbnail" onerror="this.src='${track.thumbnail}'">
+                            <div class="list-item-details">
+                                <div class="list-item-title">${track.title}</div>
+                                <div class="list-item-artist">${track.author}</div>
+                            </div>
                         </div>
-                        <div class="title">${track.title}</div>
-                        <div class="artist">${track.author}</div>
+                        <div class="list-item-right">
+                            <span class="material-icons" style="font-size: 20px;">play_arrow</span>
+                        </div>
                     `;
-                    grid.appendChild(card);
+                    grid.appendChild(listItem);
                 });
             } catch (e) {
                 grid.innerHTML = '<p style="color: var(--text-muted); font-size: 14px; padding: 16px 0;">エラーが発生しました</p>';
@@ -502,7 +601,7 @@
                     audio.src = data.url;
                     audio.play();
                     saveToRecent(currentTrack); 
-                    generateRecommendations(); // アーティストに基づいたおすすめを再生成
+                    generateRecommendations(); // 履歴変動に基づいたおすすめの再構成
                 } else {
                     alert('再生エラー: ストリームが見つかりません');
                     resetPlayIcons();
@@ -543,6 +642,21 @@
             playIcon.classList.remove('spinning');
             mobilePlayIcon.innerText = 'play_arrow';
             mobilePlayIcon.classList.remove('spinning');
+        });
+
+        // プレイリスト連続再生システム：曲が正常終了したら次を再生
+        audio.addEventListener('ended', () => {
+            if (playQueue.length > 0 && currentQueueIndex !== -1) {
+                currentQueueIndex++;
+                if (currentQueueIndex < playQueue.length) {
+                    const nextTrack = playQueue[currentQueueIndex];
+                    play(nextTrack.id, nextTrack.title, nextTrack.author, nextTrack.thumbnail);
+                } else {
+                    // キュー終了
+                    currentQueueIndex = -1;
+                    playQueue = [];
+                }
+            }
         });
 
         // 5. プログレス・シーク処理
@@ -755,12 +869,13 @@
         }, { passive: true });
 
 
-        // 8. データ永続化レイヤー (localStorage) & アーティストベースのレコメンドシステム
+        // 8. データ永続化レイヤー (localStorage) & アーティスト/履歴ベースの高度なレコメンドシステム
         function saveToRecent(track) {
             let recents = JSON.parse(localStorage.getItem('recent_tracks')) || [];
             recents = recents.filter(t => t.id !== track.id);
             recents.unshift(track);
-            if (recents.length > 6) recents.pop(); 
+            // 過去最大20件まで記憶するように拡張
+            if (recents.length > 20) recents.pop(); 
             localStorage.setItem('recent_tracks', JSON.stringify(recents));
             loadRecentTracks();
         }
@@ -770,18 +885,29 @@
             const grid = document.getElementById('recent-grid');
             const noMsg = document.getElementById('no-recent-msg');
 
+            // 既存の動的レンダリングカードのみをクリア
+            grid.querySelectorAll('.card').forEach(el => el.remove());
+
             if (recents.length === 0) {
                 noMsg.style.display = 'block';
                 return;
             }
             noMsg.style.display = 'none';
-            grid.querySelectorAll('.card').forEach(el => el.remove());
 
-            recents.forEach(track => {
+            // ホーム画面の最近聴いた曲には上位6件をコンパクトに表示
+            recents.slice(0, 6).forEach((track, index) => {
                 const secureThumb = buildYouTubeThumbnail(track.id);
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.onclick = () => play(track.id, track.title, track.author, secureThumb);
+                card.setAttribute('data-id', track.id);
+                card.setAttribute('data-title', track.title);
+                card.setAttribute('data-author', track.author);
+                card.setAttribute('data-thumbnail', secureThumb);
+
+                card.onclick = () => {
+                    extractAndSetQueue('recent-grid', index);
+                };
+
                 card.innerHTML = `
                     <img src="${secureThumb}" alt="thumbnail" onerror="this.src='${track.thumbnail}'">
                     <div class="play-btn-overlay">
@@ -795,36 +921,107 @@
         }
 
         function saveSearchQuery(query) {
+            if(!query) return;
             let history = JSON.parse(localStorage.getItem('search_history')) || [];
-            if(!history.includes(query)) {
-                history.unshift(query);
-                if(history.length > 3) history.pop();
-                localStorage.setItem('search_history', JSON.stringify(history));
+            history = history.filter(q => q !== query);
+            history.unshift(query);
+            // 検索履歴を最大15件保存するように拡張
+            if(history.length > 15) history.pop();
+            localStorage.setItem('search_history', JSON.stringify(history));
+        }
+
+        // 検索履歴UIの描画処理
+        function loadSearchHistoryUI() {
+            const history = JSON.parse(localStorage.getItem('search_history')) || [];
+            const container = document.getElementById('search-history-chips');
+            const noMsg = document.getElementById('no-history-msg');
+
+            container.innerHTML = '';
+
+            if (history.length === 0) {
+                container.appendChild(noMsg);
+                noMsg.style.display = 'block';
+                return;
+            }
+            noMsg.style.display = 'none';
+
+            history.forEach(query => {
+                const chip = document.createElement('div');
+                chip.className = 'search-chip';
+                // チップ自体をクリックしたら再検索を実行
+                chip.onclick = () => search(query);
+                
+                chip.innerHTML = `
+                    <span>${query}</span>
+                    <span class="material-icons" onclick="deleteHistoryItem(event, '${query}')">close</span>
+                `;
+                container.appendChild(chip);
+            });
+        }
+
+        // 特定の履歴アイテムの削除
+        function deleteHistoryItem(event, query) {
+            event.stopPropagation(); // チップの検索発火を防止
+            let history = JSON.parse(localStorage.getItem('search_history')) || [];
+            history = history.filter(q => q !== query);
+            localStorage.setItem('search_history', JSON.stringify(history));
+            loadSearchHistoryUI();
+            generateRecommendations();
+        }
+
+        // プレイリスト自動構築・再生ヘルパー
+        function extractAndSetQueue(containerId, startIndex) {
+            const container = document.getElementById(containerId);
+            // カードまたはリストアイテムの両方に対応するセレクタ
+            const items = container.querySelectorAll('.card, .list-item');
+            playQueue = [];
+            
+            items.forEach(item => {
+                const id = item.getAttribute('data-id');
+                const title = item.getAttribute('data-title');
+                const author = item.getAttribute('data-author');
+                const thumbnail = item.getAttribute('data-thumbnail');
+                if(id) {
+                    playQueue.push({ id, title, author, thumbnail });
+                }
+            });
+
+            if (playQueue.length > 0 && startIndex < playQueue.length) {
+                currentQueueIndex = startIndex;
+                const target = playQueue[currentQueueIndex];
+                play(target.id, target.title, target.author, target.thumbnail);
             }
         }
 
-        // アーティスト情報をフックにした高度なおすすめ生成機能
+        // 「すべて再生」ボタン押下時のハンドラー
+        function playAllFromSection(containerId) {
+            extractAndSetQueue(containerId, 0);
+        }
+
+        // 過去20件の楽曲・15件の検索履歴に基づくディープ・レコメンドシステム
         async function generateRecommendations() {
             const recommendGrid = document.getElementById('recommend-grid');
             createSkeletons(recommendGrid, 4);
             
-            let keyword = '作業用BGM';
+            let keywords = [];
             
-            // 現在再生中のアーティスト、または直近の履歴から抽出
-            if (currentTrack && currentTrack.author) {
-                keyword = currentTrack.author;
-            } else {
-                const recents = JSON.parse(localStorage.getItem('recent_tracks')) || [];
-                if (recents.length > 0) {
-                    keyword = recents[0].author;
-                } else {
-                    const history = JSON.parse(localStorage.getItem('search_history')) || [];
-                    if (history.length > 0) keyword = history[0];
-                }
+            // 1. 再生履歴から抽出（最大20件を網羅）
+            const recents = JSON.parse(localStorage.getItem('recent_tracks')) || [];
+            recents.forEach(t => { if(t.author) keywords.push(t.author); });
+
+            // 2. 検索履歴から抽出（最大15件を網羅）
+            const history = JSON.parse(localStorage.getItem('search_history')) || [];
+            history.forEach(q => { if(q) keywords.push(q); });
+
+            // 3. 候補ワードの選定（重複排除してシャッフルまたは直近を優先してキーワードを決定）
+            let selectedKeyword = '作業用BGM'; // フォールバック
+            if (keywords.length > 0) {
+                // 配列からランダムにキーワードを1つ選定し多様性を演出
+                selectedKeyword = keywords[Math.floor(Math.random() * keywords.length)];
             }
             
             try {
-                const res = await fetch(`/api/search?q=${encodeURIComponent(keyword)}`);
+                const res = await fetch(`/api/search?q=${encodeURIComponent(selectedKeyword)}`);
                 const tracks = await res.json();
                 
                 recommendGrid.innerHTML = '';
@@ -836,11 +1033,19 @@
                     return;
                 }
 
-                filteredTracks.forEach(track => {
+                filteredTracks.forEach((track, index) => {
                     const secureThumb = buildYouTubeThumbnail(track.id);
                     const card = document.createElement('div');
                     card.className = 'card';
-                    card.onclick = () => play(track.id, track.title, track.author, secureThumb);
+                    card.setAttribute('data-id', track.id);
+                    card.setAttribute('data-title', track.title);
+                    card.setAttribute('data-author', track.author);
+                    card.setAttribute('data-thumbnail', secureThumb);
+
+                    card.onclick = () => {
+                        extractAndSetQueue('recommend-grid', index);
+                    };
+
                     card.innerHTML = `
                         <img src="${secureThumb}" alt="thumbnail" onerror="this.src='${track.thumbnail}'">
                         <div class="play-btn-overlay">
@@ -904,11 +1109,19 @@
             }
             noMsg.style.display = 'none';
 
-            favorites.forEach(track => {
+            favorites.forEach((track, index) => {
                 const secureThumb = buildYouTubeThumbnail(track.id);
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.onclick = () => play(track.id, track.title, track.author, secureThumb);
+                card.setAttribute('data-id', track.id);
+                card.setAttribute('data-title', track.title);
+                card.setAttribute('data-author', track.author);
+                card.setAttribute('data-thumbnail', secureThumb);
+
+                card.onclick = () => {
+                    extractAndSetQueue('favorite-grid', index);
+                };
+
                 card.innerHTML = `
                     <img src="${secureThumb}" alt="thumbnail" onerror="this.src='${track.thumbnail}'">
                     <div class="play-btn-overlay">
